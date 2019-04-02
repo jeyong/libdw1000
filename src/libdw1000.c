@@ -29,12 +29,14 @@ static const uint8_t BIAS_500_64_ZERO = 8;
 static const uint8_t BIAS_900_16_ZERO = 7;
 static const uint8_t BIAS_900_64_ZERO = 7;
 
+// range bias 테이블 (어디에 사용하는거지?)
 // range bias tables (500 MHz in [mm] and 900 MHz in [2mm] - to fit into bytes)
 static const uint8_t BIAS_500_16[] = {198, 187, 179, 163, 143, 127, 109, 84, 59, 31,   0,  36,  65,  84,  97, 106, 110, 112};
 static const uint8_t BIAS_500_64[] = {110, 105, 100,  93,  82,  69,  51, 27,  0, 21,  35,  42,  49,  62,  71,  76,  81,  86};
 static const uint8_t BIAS_900_16[] = {137, 122, 105, 88, 69,  47,  25,  0, 21, 48, 79, 105, 127, 147, 160, 169, 178, 197};
 static const uint8_t BIAS_900_64[] = {147, 133, 117, 99, 75, 50, 29,  0, 24, 45, 63, 76, 87, 98, 116, 122, 132, 142};
 
+// 기본 동작 모드 (데이터 길이 | 도달거리 | 속도 | 정확성 | 저전력)
 // Default Mode of operation
 const uint8_t MODE_LONGDATA_RANGE_LOWPOWER[] = {TRX_RATE_110KBPS, TX_PULSE_FREQ_16MHZ, TX_PREAMBLE_LEN_2048};
 const uint8_t MODE_SHORTDATA_FAST_LOWPOWER[] = {TRX_RATE_6800KBPS, TX_PULSE_FREQ_16MHZ, TX_PREAMBLE_LEN_128};
@@ -48,6 +50,7 @@ const uint8_t MODE_LONGDATA_MID_ACCURACY[] = {TRX_RATE_850KBPS, TX_PULSE_FREQ_64
 // Useful shortcuts
 #define delayms(delay) dev->ops->delayms(dev, delay)
 
+// 유틸리티 기능 (bit설정, 값을 byte로 쓰기, )
 // Utility functions
 static void setBit(uint8_t data[], unsigned int n, unsigned int bit, bool val);
 static void writeValueToBytes(uint8_t data[], long val, unsigned int n);
@@ -59,6 +62,7 @@ static void dummy(){
   ;
 }
 
+// dev 초기화 및 옵션
 void dwInit(dwDevice_t* dev, dwOps_t* ops)
 {
   dev->ops = ops;
