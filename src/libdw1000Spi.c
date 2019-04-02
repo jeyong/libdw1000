@@ -21,7 +21,7 @@
 
 #include "libdw1000Spi.h"
 
-
+//spi 읽고/쓰기 관련
 void dwSpiRead(dwDevice_t *dev, uint8_t regid, uint32_t address,
                                 void* data, size_t length) {
   uint8_t header[3];

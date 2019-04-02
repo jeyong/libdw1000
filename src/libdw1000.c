@@ -62,7 +62,7 @@ static void dummy(){
   ;
 }
 
-// dev 초기화 및 옵션
+// dev 초기화 및 옵션 (크기, freq, rate, channel, device mode)
 void dwInit(dwDevice_t* dev, dwOps_t* ops)
 {
   dev->ops = ops;
@@ -102,6 +102,7 @@ void* dwGetUserdata(dwDevice_t* dev)
   return dev->userdata;
 }
 
+// 설정
 int dwConfigure(dwDevice_t* dev)
 {
   dwEnableClock(dev, dwClockAuto);
@@ -181,7 +182,6 @@ void dwManageLDE(dwDevice_t* dev) {
 	pmscctrl0[1] = 0x02;
 	dwSpiWrite(dev, PMSC, PMSC_CTRL0_SUB, pmscctrl0, LEN_PMSC_CTRL0);
 }
-
 
 uint32_t dwGetDeviceId(dwDevice_t* dev)
 {
@@ -684,6 +684,7 @@ void dwGetData(dwDevice_t* dev, uint8_t data[], unsigned int n) {
 	dwSpiRead(dev, RX_BUFFER, NO_SUB, data, n);
 }
 
+// timestamp 얻기
 void dwGetTransmitTimestamp(dwDevice_t* dev, dwTime_t* time) {
 	dwSpiRead(dev, TX_TIME, TX_STAMP_SUB, time->raw, LEN_TX_STAMP);
 }
@@ -758,6 +759,7 @@ void dwGetSystemTimestamp(dwDevice_t* dev, dwTime_t* time) {
 	dwSpiRead(dev, SYS_TIME, NO_SUB, time->raw, LEN_SYS_TIME);
 }
 
+// 수발신 완료 여부 확인
 bool dwIsTransmitDone(dwDevice_t* dev) {
 	return getBit(dev->sysstatus, LEN_SYS_STATUS, TXFRS_BIT);
 }
@@ -799,7 +801,7 @@ bool dwIsClockProblem(dwDevice_t* dev) {
 	}
 	return false;
 }
-
+// status 관련 (수발신 status)
 void dwClearAllStatus(dwDevice_t* dev) {
 	memset(dev->sysstatus, 0, LEN_SYS_STATUS);
   uint32_t reg = 0xffffffff;
@@ -824,6 +826,7 @@ void dwClearTransmitStatus(dwDevice_t* dev) {
 	dwSpiWrite32(dev, SYS_STATUS, NO_SUB, regData);
 }
 
+// 수신 quality
 float dwGetReceiveQuality(dwDevice_t* dev) {
 	uint8_t noiseBytes[LEN_STD_NOISE];
 	uint8_t fpAmpl2Bytes[LEN_FP_AMPL2];
@@ -835,12 +838,14 @@ float dwGetReceiveQuality(dwDevice_t* dev) {
 	return (float)f2 / noise;
 }
 
+// spi의 수신 정보 읽기
 static float spiReadRxInfo(dwDevice_t *dev) {
 	uint8_t rxFrameInfo[LEN_RX_FINFO];
 	dwSpiRead(dev, RX_FINFO, NO_SUB, rxFrameInfo, LEN_RX_FINFO);
 	return (float)((((unsigned int)rxFrameInfo[2] >> 4) & 0xFF) | ((unsigned int)rxFrameInfo[3] << 4));
 }
 
+// 전원
 static float calculatePower(float base, float N, uint8_t pulseFrequency) {
   float A, corrFac;
 
@@ -864,6 +869,7 @@ static float calculatePower(float base, float N, uint8_t pulseFrequency) {
 	return estFpPwr;
 }
 
+// first path의 전원. 수신 전원
 float dwGetFirstPathPower(dwDevice_t* dev) {
   float f1 = (float)dwSpiRead16(dev, RX_TIME, FP_AMPL1_SUB);
   float f2 = (float)dwSpiRead16(dev, RX_FQUAL, FP_AMPL2_SUB);
@@ -896,6 +902,7 @@ void dwEnableMode(dwDevice_t *dev, const uint8_t mode[]) {
 	}
 }
 
+// register 튜닝하기
 void dwTune(dwDevice_t *dev) {
 	// these registers are going to be tuned/configured
 	uint8_t agctune1[LEN_AGC_TUNE1];
